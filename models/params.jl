@@ -1,4 +1,6 @@
 # parameter values (both normal and diabetic)
+
+
 DM_params = Dict(
               V_G   => [1.88,1.49], 
               k_1   => [0.065,0.042],  
@@ -54,8 +56,7 @@ all_p = Dict(st => Dict(pn => DM_params[pn][i] for pn in all_pn)
              for (st,i) in zip([:norm,:diab],[1,2]))
 
 # all variable names
-all_vn = [G_p,G_t,I_l,I_p,Q_sto1,Q_sto2,Q_gut,I_1,I_d,X,Y,I_po]
-
+#all_vn = [G_p,G_t,I_l,I_p,Q_sto1,Q_sto2,Q_gut,I_1,I_d,X,Y,I_po]
 """
     traces_of_obs_vars(sol,                         # solution of an ODE
                        rn::ReactionSystem,          # reaction network
@@ -102,6 +103,7 @@ end # traces_of_obs_vars
 returns the init states of all variables as a dictionary
 """
 function gen_init_states(params::Dict{Num,Float64})::Dict{Num,Float64}
+
     init_states::Dict{Num,Float64} = Dict()
     m30::Float64 = params[HE_b]*params[m_1]/(1-params[HE_b])
     pSb = Sb(params[m_5],params[m_6],params[HE_b])
@@ -131,3 +133,4 @@ function gen_init_states(params::Dict{Num,Float64})::Dict{Num,Float64}
 
     init_states
 end # gen_init_state
+

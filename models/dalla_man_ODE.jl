@@ -1,8 +1,12 @@
+
+using DifferentialEquations
+using Catalyst
+using  Plots
 # ODE model definition
 
 function dalla_net!(du, u, p, t)
     # parameters
-    pV_G, pk_1, pk_2, pV_I, pm_1, pm_5, pm_6, pHE_b, pk_max, pk_min, pk_abs, pk_gri, pf, pb, pc, pBW, pD, pk_p2, pk_p3, pk_p4, pk_i, pF_cns, pGb, pV_mx, pxK_m0, pxK_mx, pp_2U, pK, pxα_Y, pxβ_Y, pγ, pk_e1, pk_e2, pIb, pEGPb = p
+     pV_G, pk_1, pk_2, pV_I, pm_1, pm_5, pm_6, pHE_b, pk_max, pk_min, pk_abs, pk_gri, pf, pb, pc, pBW, pD, pk_p2, pk_p3, pk_p4, pk_i, pF_cns, pGb, pV_mx, pxK_m0, pxK_mx, pp_2U, pK, pxα_Y, pxβ_Y, pγ, pk_e1, pk_e2, pIb, pEGPb = p
 
     pSb = Sb(pm_5,pm_6,pHE_b)
     # pGtb = Gtb(pF_cns,pEGPb,pk_1,pGb,pV_G,pk_2)
@@ -99,3 +103,27 @@ function dalla_net!(du, u, p, t)
     du[11] = piecewiseDY(t)          # d.Y
     du[12] = - pγ * u[12] + S_po(t)   # d.I_po    
 end # dalla_net!
+
+
+include("params.jl")
+param_val = [p[k] for k in keys(p)]
+all_vn = [G_p,G_t,I_l,I_p,Q_sto1,Q_sto2,Q_gut,I_1,I_d,X,Y,I_po]
+all_pn = [V_G,k_1, k_2, V_I, m_1, m_5, m_6, HE_b, k_max, k_min, k_abs, k_gri, f, b, d, BW, Dose, k_p2, k_p3, k_p4, k_i, F_cns, G_b, V_mx, K_m0, K_mx, p2u, K, α_Y, β_Y, γ, k_e1, k_e2, I_b, EGP_b]
+
+p = (all_p[:diab])
+CI = gen_init_states(p)
+#CI_val = Float64.(collect(values(CI)))
+CI_val_order = [CI[name] for name in all_vn]
+p_val_order = [p[n] for n in all_pn]
+print(p_val_order)
+print(p)
+print(CI_val)
+tspan = (0.0, 420.0)
+
+prob = ODEProblem(dalla_net!, CI_val_order, tspan, p_val_order)
+print(collect(p))
+sol = solve(prob)
+
+
+plot(sol.t, sol[1, :]/1.49, label="G_p",ylims=(0,400))
+plot(sol.t, sol[4, :]/0.04, label="I_p",ylims=(0,400))

@@ -114,7 +114,6 @@ Ex_meal(Q_gut) = k_abs*Q_gut*(1.0-(f/BW))
 k_empt(Q_sto,Dose) = k_min + ((k_max-k_min)/2.0) * (tanh(α(Dose)*(Q_sto - b*Dose)) - tanh(β(Dose)*(Q_sto - d * Dose)) + 2.0) # gastric emptying, /min
 α(Dose) = 5.0/(2.0*Dose*(1.0-b)) # rate of decrease to k_min, /mg
 β(Dose) = 5.0/(2.0*Dose*d)       # rate of increase to k_max, /mg
-@syms Q_gut(t)
 Ra_meal_time(t) = Ra_meal(Q_gut(t))
 
 
@@ -333,9 +332,10 @@ full_model_complete = complete(full_model)
 
 println(full_model)
 p = all_p[:diab]
-CI = gen_init_states(p)
+typeof(p)
+CI=gen_init_states(p)
 CI2 = gen_init_states(all_p[:norm])
-print(p)
+
 print(CI)
 print(CI2)
 #println(p)
@@ -346,10 +346,10 @@ prob_dallaman = ODEProblem(complete(full_model), CI, tspan, p)
 
 
 sol_dallaman = solve(prob_dallaman)
-plot(sol_dallaman,ylims=())
+plot(sol_dallaman)
 #plot(sol_dallaman.t,sol_dallaman[:Q_sto2])
+#plot(sol_dallaman.t,Ra_meal_time)
 
 plot(sol_dallaman.t,sol_dallaman[:I_p]/0.04,ylims=(0,400),yticks=0:50:400)   
 plot!(sol_dallaman.t,sol_dallaman[:G_p]/1.49,ylims=(0,400),yticks=0:50:400)  
 
-plot(sol_dallaman.t,Ra_meal_time)
